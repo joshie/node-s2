@@ -3,9 +3,6 @@
 #ifndef UTIL_GEOMETRY_S2REGION_COVERER_H_
 #define UTIL_GEOMETRY_S2REGION_COVERER_H_
 
-#include <memory>
-using std::unique_ptr;
-
 #include <queue>
 using std::priority_queue;
 
@@ -17,6 +14,7 @@ using std::make_pair;
 using std::vector;
 
 #include "base/macros.h"
+#include "base/scoped_ptr.h"
 #include "s2cell.h"
 #include "s2cellid.h"
 
@@ -188,7 +186,7 @@ class S2RegionCoverer {
 
   // A temporary variable used by GetCovering() that holds the cell ids that
   // have been added to the covering so far.
-  unique_ptr<vector<S2CellId> > result_;
+  scoped_ptr<vector<S2CellId> > result_;
 
   // We keep the candidates in a priority queue.  We specify a vector to hold
   // the queue entries since for some reason priority_queue<> uses a deque by
@@ -197,7 +195,7 @@ class S2RegionCoverer {
   typedef pair<int, Candidate*> QueueEntry;
   typedef priority_queue<QueueEntry, vector<QueueEntry>,
                          CompareQueueEntries> CandidateQueue;
-  unique_ptr<CandidateQueue> pq_;
+  scoped_ptr<CandidateQueue> pq_;
 
   // True if we're computing an interior covering.
   bool interior_covering_;

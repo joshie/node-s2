@@ -8,9 +8,6 @@ using std::max;
 using std::swap;
 using std::reverse;
 
-#include <memory>
-using std::unique_ptr;
-
 #include <string>
 using std::string;
 
@@ -20,6 +17,8 @@ using std::vector;
 
 #include "base/commandlineflags.h"
 #include "base/logging.h"
+#include "base/scoped_ptr.h"
+// #include "testing/base/public/benchmark.h"
 #include "testing/base/public/gunit.h"
 #include "s2cap.h"
 #include "s2polyline.h"
@@ -495,9 +494,9 @@ TEST(S2EdgeUtil, IntersectionTolerance) {
 
 bool IsEdgeBNearEdgeA(string const& a_str, const string& b_str,
                       double max_error_degrees) {
-  unique_ptr<S2Polyline> a(S2Testing::MakePolyline(a_str));
+  scoped_ptr<S2Polyline> a(S2Testing::MakePolyline(a_str));
   EXPECT_EQ(2, a->num_vertices());
-  unique_ptr<S2Polyline> b(S2Testing::MakePolyline(b_str));
+  scoped_ptr<S2Polyline> b(S2Testing::MakePolyline(b_str));
   EXPECT_EQ(2, b->num_vertices());
   return S2EdgeUtil::IsEdgeBNearEdgeA(a->vertex(0), a->vertex(1),
                                       b->vertex(0), b->vertex(1),

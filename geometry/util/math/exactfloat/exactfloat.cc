@@ -2,7 +2,6 @@
 
 #include "util/math/exactfloat/exactfloat.h"
 #include <cstring>
-#include <cmath>
 
 #include <math.h>
 #include <algorithm>
@@ -31,10 +30,10 @@ const int ExactFloat::kDoubleMantissaBits;
 // precision range so that (2 * bn_exp_) does not overflow an "int".  We take
 // advantage of this, for example, by only checking for overflow/underflow
 // *after* multiplying two numbers.
-static_assert(
+COMPILE_ASSERT(
     ExactFloat::kMaxExp <= INT_MAX / 2 &&
     ExactFloat::kMinExp - ExactFloat::kMaxPrec >= INT_MIN / 2,
-    "exactfloat_exponent_might_overflow");
+    exactfloat_exponent_might_overflow);
 
 // We define a few simple extensions to the BIGNUM interface.  In some cases
 // these depend on BIGNUM internal fields, so they might require tweaking if
@@ -45,7 +44,7 @@ inline static void BN_ext_set_uint64(BIGNUM* bn, uint64 v) {
 #if BN_BITS2 == 64
   CHECK(BN_set_word(bn, v));
 #else
-  static_assert(BN_BITS2 == 32, "at_least_32_bit_openssl_build_needed");
+  COMPILE_ASSERT(BN_BITS2 == 32, at_least_32_bit_openssl_build_needed);
   CHECK(BN_set_word(bn, static_cast<uint32>(v >> 32)));
   CHECK(BN_lshift(bn, bn, 32));
   CHECK(BN_add_word(bn, static_cast<uint32>(v)));
@@ -59,7 +58,7 @@ inline static uint64 BN_ext_get_uint64(const BIGNUM* bn) {
 #if BN_BITS2 == 64
   return BN_get_word(bn);
 #else
-  static_assert(BN_BITS2 == 32, "at_least_32_bit_openssl_build_needed");
+  COMPILE_ASSERT(BN_BITS2 == 32, at_least_32_bit_openssl_build_needed);
   if (bn->top == 0) return 0;
   if (bn->top == 1) return BN_get_word(bn);
   DCHECK_EQ(bn->top, 2);
@@ -87,9 +86,6 @@ static int BN_ext_count_low_zero_bits(const BIGNUM* bn) {
 
 ExactFloat::ExactFloat(double v) {
   BN_init(&bn_);
-#if __cplusplus > 199711L
-  using std::signbit;
-#endif
   sign_ = signbit(v) ? -1 : 1;
   if (isnan(v)) {
     set_nan();
@@ -332,7 +328,7 @@ string ExactFloat::ToStringWithMaxDigits(int max_digits) const {
     // Use fixed format.  We split this into two cases depending on whether
     // the integer portion is non-zero or not.
     if (exp10 > 0) {
-      if (exp10 >= (int)digits.size()) {
+      if (exp10 >= digits.size()) {
         str += digits;
         for (int i = exp10 - digits.size(); i > 0; --i) {
           str.push_back('0');
@@ -665,8 +661,8 @@ ExactFloat rint(const ExactFloat& a) {
 
 template <class T>
 T ExactFloat::ToInteger(RoundingMode mode) const {
-  static_assert(sizeof(T) <= sizeof(uint64), "max_64_bits_supported");
-  static_assert(numeric_limits<T>::is_signed, "only_signed_types_supported");
+  COMPILE_ASSERT(sizeof(T) <= sizeof(uint64), max_64_bits_supported);
+  COMPILE_ASSERT(numeric_limits<T>::is_signed, only_signed_types_supported);
   const int64 kMinValue = numeric_limits<T>::min();
   const int64 kMaxValue = numeric_limits<T>::max();
 

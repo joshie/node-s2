@@ -19,7 +19,8 @@ class S1Angle;
 // allowed, i.e. adjacent vertices should not be identical or antipodal.
 class S2Polyline : public S2Region {
  public:
-  // Creates an empty S2Polyline that should be initialized by calling Init().
+  // Creates an empty S2Polyline that should be initialized by calling Init()
+  // or Decode().
   S2Polyline();
 
   // Convenience constructors that call Init() with the given vertices.
@@ -173,6 +174,9 @@ class S2Polyline : public S2Region {
   // is not numerically well-defined except at the polyline vertices.
   virtual bool VirtualContainsPoint(S2Point const& p) const { return false; }
 
+  virtual void Encode(Encoder* const encoder) const;
+  virtual bool Decode(Decoder* const decoder);
+
  private:
   // Internal constructor used only by Clone() that makes a deep copy of
   // its argument.
@@ -184,7 +188,7 @@ class S2Polyline : public S2Region {
   int num_vertices_;
   S2Point* vertices_;
 
- // DISALLOW_EVIL_CONSTRUCTORS(S2Polyline);
+  //DISALLOW_EVIL_CONSTRUCTORS(S2Polyline);
 };
 
 #endif  // UTIL_GEOMETRY_S2POLYLINE_H__
