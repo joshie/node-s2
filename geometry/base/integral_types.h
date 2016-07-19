@@ -10,7 +10,11 @@
 #ifndef BASE_INT_TYPES_H_
 #define BASE_INT_TYPES_H_
 
-#include <cstdint>
+// These typedefs are also defined in base/google.swig. In the
+// SWIG environment, we use those definitions and avoid duplicate
+// definitions here with an ifdef. The definitions should be the
+// same in both files, and ideally be only defined in this file.
+#ifndef SWIG
 // Standard typedefs
 // All Google2 code is compiled with -funsigned-char to make "char"
 // unsigned.  Google2 code therefore doesn't need a "uchar" type.
@@ -18,7 +22,11 @@ typedef signed char         schar;
 typedef signed char         int8;
 typedef short               int16;
 typedef int                 int32;
-typedef int64_t             int64;
+#ifdef COMPILER_MSVC
+typedef __int64             int64;
+#else
+typedef long long           int64;
+#endif /* COMPILER_MSVC */
 
 // NOTE: unsigned types are DANGEROUS in loops and other arithmetical
 // places.  Use the signed types unless your variable represents a bit
@@ -29,7 +37,11 @@ typedef int64_t             int64;
 typedef unsigned char      uint8;
 typedef unsigned short     uint16;
 typedef unsigned int       uint32;
-typedef uint64_t           uint64;
+#ifdef COMPILER_MSVC
+typedef unsigned __int64   uint64;
+#else
+typedef unsigned long long uint64;
+#endif /* COMPILER_MSVC */
 
 // A type to represent a Unicode code-point value. As of Unicode 4.0,
 // such values require up to 21 bits.
@@ -49,6 +61,8 @@ typedef unsigned long      uword_t;
 // A signed natural machine word. In general you want to use "int"
 // rather than "sword_t"
 typedef long sword_t;
+
+#endif /* SWIG */
 
 // long long macros to be used because gcc and vc++ use different suffixes,
 // and different size specifiers in format strings

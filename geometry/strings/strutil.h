@@ -35,8 +35,8 @@ using std::make_pair;
 #include <vector>
 using std::vector;
 
-#include <cstring>
-#include <cstdlib>
+#include <string.h>
+#include <stdlib.h>
 
 // for strcasecmp (check SuSv3 -- this is the only header it's in!)
 // MSVC doesn't have <strings.h>. Luckily, it defines equivalent
@@ -55,22 +55,30 @@ static const int kFastToBufferSize =       32;
 
 #include "base/basictypes.h"
 #include "base/logging.h"  // for CHECK
-#include "strtoint.h"
+#include "base/strtoint.h"
+#include "base/int128.h"
+#include "ascii_ctype.h"
 //#include "charset.h"
 //#include "escaping.h"
 //#include "host_port.h"
 #include "stringprintf.h"
+#include "base/stl_decl.h"
 #include "base/port.h"
+//#include "endian.h"
 
 // ----------------------------------------------------------------------
+// FpToString()
 // FloatToString()
 // IntToString()
 // Int64ToString()
 // UInt64ToString()
 //    Convert various types to their string representation, possibly padded
 //    with spaces, using snprintf format specifiers.
+//    "Fp" here stands for fingerprint: a 64-bit entity
+//    represented in 16 hex digits.
 // ----------------------------------------------------------------------
 
+string FpToString(Fprint fp);
 string FloatToString(float f, const char* format);
 string IntToString(int i, const char* format);
 string Int64ToString(int64 i64, const char* format);

@@ -313,6 +313,7 @@ class S2CellId {
 
   uint64 id_;
 } PACKED;  // Necessary so that structures containing S2CellId's can be PACKED.
+DECLARE_POD(S2CellId);
 
 inline bool operator==(S2CellId const& x, S2CellId const& y) {
   return x.id() == y.id();
@@ -486,6 +487,7 @@ inline S2CellId S2CellId::End(int level) {
 
 ostream& operator<<(ostream& os, S2CellId const& id);
 
+#ifndef SWIG
 #include <unordered_set>
 namespace std {
 
@@ -498,5 +500,7 @@ template<> struct hash<S2CellId> {
 
 
 }  // namespace std
+
+#endif  // SWIG
 
 #endif  // UTIL_GEOMETRY_S2CELLID_H_

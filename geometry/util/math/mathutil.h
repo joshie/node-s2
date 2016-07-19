@@ -251,6 +251,22 @@ class MathUtil {
   }
 
   // --------------------------------------------------------------------
+  // ShardsToRead
+  //   Resharding helper.  Suppose we have N input shards and M output
+  //   shards sharded by modulo of the same hash function.  If we want
+  //   to write a subset of the output shards, which input shards should
+  //   we read?
+  //
+  // Inputs:
+  //   shards_to_write gives the desired subset of the M output shards.
+  //   shards_to_read gives the number N of the input shards.
+  // Outputs:
+  //   shards_to_read gives the subset of the N input shards to read.
+  // --------------------------------------------------------------------
+  static void ShardsToRead(const vector<bool>& shards_to_write,
+                           vector<bool>* shards_to_read);
+
+  // --------------------------------------------------------------------
   // Round, IntRound
   //   These functions round a floating-point number to an integer.  They
   //   work for positive or negative numbers.
@@ -272,8 +288,8 @@ class MathUtil {
   // --------------------------------------------------------------------
   template <class IntOut, class FloatIn>
   static IntOut Round(FloatIn x) {
-    static_assert(!MathLimits<FloatIn>::kIsInteger, "FloatIn_is_integer");
-    static_assert(MathLimits<IntOut>::kIsInteger, "IntOut_is_not_integer");
+    COMPILE_ASSERT(!MathLimits<FloatIn>::kIsInteger, FloatIn_is_integer);
+    COMPILE_ASSERT(MathLimits<IntOut>::kIsInteger, IntOut_is_not_integer);
 
     // We don't use sgn(x) below because there is no need to distinguish the
     // (x == 0) case.  Also note that there are specialized faster versions
